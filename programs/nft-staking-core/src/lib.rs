@@ -1,17 +1,23 @@
 use anchor_lang::prelude::*;
 
-mod state;
-mod instructions;
+mod constants;
 mod errors;
+mod helper;
+mod instructions;
+mod state;
 use instructions::*;
 
-declare_id!("72Zim5YCQs4goV9mhSAJJwGL4ELgNjjmkKxWC3dSmgGZ");
+declare_id!("7fq5ZZirUgMUDDLa95dVX5kW68HneF8M6XR2o1SQL6Wf");
 
 #[program]
 pub mod nft_staking_core {
     use super::*;
 
-    pub fn create_collection(ctx: Context<CreateCollection>, name: String, uri: String) -> Result<()> {
+    pub fn create_collection(
+        ctx: Context<CreateCollection>,
+        name: String,
+        uri: String,
+    ) -> Result<()> {
         ctx.accounts.create_collection(name, uri, &ctx.bumps)
     }
 
@@ -19,8 +25,13 @@ pub mod nft_staking_core {
         ctx.accounts.mint_nft(name, uri, &ctx.bumps)
     }
 
-    pub fn initialize_config(ctx: Context<InitConfig>, points_per_stake: u32, freeze_period: u8) -> Result<()> {
-        ctx.accounts.init_config(points_per_stake, freeze_period, &ctx.bumps)
+    pub fn initialize_config(
+        ctx: Context<InitConfig>,
+        points_per_stake: u32,
+        freeze_period: u8,
+    ) -> Result<()> {
+        ctx.accounts
+            .init_config(points_per_stake, freeze_period, &ctx.bumps)
     }
 
     pub fn stake(ctx: Context<Stake>) -> Result<()> {
@@ -31,4 +42,19 @@ pub mod nft_staking_core {
         ctx.accounts.unstake(&ctx.bumps)
     }
 
+    pub fn burn(ctx: Context<BurnStakedNft>) -> Result<()> {
+        ctx.accounts.burn(&ctx.bumps)
+    }
+
+    pub fn initialize_oracle(ctx: Context<InitializeOracle>) -> Result<()> {
+        ctx.accounts.initialize(ctx.bumps)
+    }
+
+    pub fn update_oracle(ctx: Context<UpdateOracle>) -> Result<()> {
+        ctx.accounts.update()
+    }
+
+    pub fn transfer_nft(ctx: Context<TransferNFT>) -> Result<()> {
+        ctx.accounts.transfer()
+    }
 }

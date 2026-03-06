@@ -16,4 +16,8 @@ pub enum StakingError {
     FreezePeriodNotElapsed,
     #[msg("Overflow")]
     Overflow,
+    #[msg("Staked collection is missing attributes")]
+    CollectionAttributesMissing,
+    #[msg("Already updated oracle")]
+    AlreadyUpdated,
 }
