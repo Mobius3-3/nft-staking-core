@@ -6,14 +6,21 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-nft_staking_core = "7fq5ZZirUgMUDDLa95dVX5kW68HneF8M6XR2o1SQL6Wf"
+nft_staking_core = "2Qj1ytQuewhLnVWK4hFxAUxK2stwqBY2L6bFweaW2KAC"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
 cluster = "localnet"
-wallet = "~/.config/solana/id.json"
+wallet = "~/solana/id.json"
+
+[test.validator]
+url = "https://api.mainnet-beta.solana.com"
+bind_address = "127.0.0.1"
+
+[[test.validator.clone]]
+address = "CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 \"tests/**/*.ts\""

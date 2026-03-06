@@ -9,7 +9,6 @@ pub mod transfer_nft;
 pub mod unstake;
 pub mod update_oracle;
 pub use burn_nft::*;
-pub use claim_rewards::*;
 pub use create_collection::*;
 pub use init_config::*;
 pub use initialize_oracle::*;

@@ -54,6 +54,8 @@ describe("nft-staking-core", () => {
     program.programId
   )[0];
 
+  let supportsTimeTravel = true;
+
   before(async () => {
     const tx = await provider.connection.requestAirdrop(
       rewardVault,
@@ -156,11 +158,20 @@ describe("nft-staking-core", () => {
     const currentTimestamp = Date.now();
 
     const timeJump = (3 * 60 * 60 * 1000)
-    await advanceTime({ absoluteTimestamp: currentTimestamp + timeJump });
+    supportsTimeTravel = await advanceTime({ absoluteTimestamp: currentTimestamp + timeJump });
+    if (!supportsTimeTravel) {
+      console.log("\nSkipping time travel: surfnet_timeTravel not available on this validator");
+      return;
+    }
     console.log("\nTime traveled in hour", timeJump)
   });
 
   it("Update Oracle", async () => {
+    if (!supportsTimeTravel) {
+      console.log("\nSkipping Update Oracle: boundary time travel unavailable");
+      return;
+    }
+
     const oracleData = await program.account.oracle.all();
     console.log("Oracle State", oracleData[0].account.validation);
 
@@ -202,7 +213,7 @@ describe("nft-staking-core", () => {
     console.log("\nYour transaction signature", tx);
   });
 
-  async function advanceTime(params: { absoluteEpoch?: number; absoluteSlot?: number; absoluteTimestamp?: number }): Promise<void> {
+  async function advanceTime(params: { absoluteEpoch?: number; absoluteSlot?: number; absoluteTimestamp?: number }): Promise<boolean> {
     const rpcResponse = await fetch(provider.connection.rpcEndpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -216,10 +227,14 @@ describe("nft-staking-core", () => {
 
     const result = await rpcResponse.json() as { error?: any; result?: any };
     if (result.error) {
+      if (result.error.code === -32601) {
+        return false;
+      }
       throw new Error(`Time travel failed: ${JSON.stringify(result.error)}`);
     }
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
+    return true;
   }
 
 
